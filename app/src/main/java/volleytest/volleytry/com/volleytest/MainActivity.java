@@ -21,29 +21,28 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Button mBtnAdd;
+    private ProgressDialog mPdiggy;
 
-    Button btnAdd;
+    private String TAG = "VOLLEY_ADD_PRODUCT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnAdd = (Button) findViewById(R.id.btnAdd);
-    }
-        ProgressDialog pDiggy = new ProgressDialog(this);
-        pDiggy.setMessage("Loading...");
-        pDiggy.show();
+        mBtnAdd = (Button) findViewById(R.id.btnAdd);
 
+        mPdiggy = new ProgressDialog(this);
+        mPdiggy.setMessage("Loading...");
+        mPdiggy.show();
 
-        String tag_json_obj = "json_obj_req";
         String url = "http://taisondigital.com.ph/testforyou/add-product";
-
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
-                pDiggy.hide();
+                mPdiggy.hide();
 
             }
         },
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         VolleyLog.d(TAG, "Error: " + error.getMessage());
-                        pDiggy.hide();
+                        mPdiggy.hide();
                     }
                 }) {
             @Override
@@ -65,7 +64,9 @@ public class MainActivity extends AppCompatActivity {
                 return params;
             }
         };
-        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
 
+        AppController.getInstance().addToRequestQueue(jsonObjReq, TAG);
+
+    }
 
 }
