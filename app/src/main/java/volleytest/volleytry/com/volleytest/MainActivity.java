@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -16,30 +17,42 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String TAG = "VOLLEY_ADD_PRODUCT";
+    private ProgressDialog pDiggy;
+    String url = "http://taisondigital.com.ph/testforyou/add-product";
 
-    Button btnAdd;
+    private Button btnAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnAdd = (Button) findViewById(R.id.btnAdd);
-    }
-        ProgressDialog pDiggy = new ProgressDialog(this);
+
+        pDiggy = new ProgressDialog(this);
         pDiggy.setMessage("Loading...");
         pDiggy.show();
 
 
-        String tag_json_obj = "json_obj_req";
-        String url = "http://taisondigital.com.ph/testforyou/add-product";
+        postRequest();
+
+    }
 
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+    private void postRequest() {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("name", " asf");
+        params.put("quantity", "sf");
+        params.put("price", "asfgh");
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
@@ -55,17 +68,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }) {
             @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", "asd");
-                params.put("quantity", "123");
-                params.put("price", "12345");
-                Log.e("err", params.toString());
+            public Map<String, String> getHeaders() throws AuthFailureError{
+                HashMap<String, String> header = new HashMap<String, String>();
+                header.put("Content-Type", "application/json; charset=utf-8");
 
-                return params;
+                return header;
             }
-        };
-        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
 
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjReq, TAG);
+    }
 
 }
