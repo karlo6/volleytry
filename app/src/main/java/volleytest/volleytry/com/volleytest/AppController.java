@@ -1,5 +1,6 @@
 package volleytest.volleytry.com.volleytest;
 
+import android.app.Application;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -22,53 +23,49 @@ import java.util.Map;
  * Created by Taison_Gary on 1/3/2017.
  */
 
-public class AppController extends AppCompatActivity {
+public class AppController extends Application {
 
     public static final String TAG = AppController.class
             .getSimpleName();
 
-
+    private RequestQueue mRequestQueue;
+    private static AppController mInstance;
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.appcontroller);
+    public void onCreate() {
+        super.onCreate();
+        mInstance = this;
     }
 
+    public static synchronized AppController getInstance() {
+        return mInstance;
+    }
 
-    RequestQueue queue = Volley.newRequestQueue(this);
-
-
-    String url = "http://taisondigital.com.ph/testforyou/add-product";
-
-
-    JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            Log.d("Response", response.toString());
-
+    public RequestQueue getRequestQueue() {
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
         }
-    },
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("Error.Response", response.toString());
+        return mRequestQueue;
+    }
 
-                }
-            }
-    ) {
-        @Override
-        protected Map<String, String> getParams() {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("name", "asd");
-            params.put("quantity", "123");
-            params.put("price", "12345");
-            Log.e("err", params.toString());
+    public <T> void addToRequestQueue(Request<T> req, String tag) {
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+        getRequestQueue().add(req);
+    }
 
-            return params;
+    public <T> void addToRequestQueue(Request<T> req) {
+        req.setTag(TAG);
+        getRequestQueue().add(req);
+    }
+
+    public void cancelPendingRequests(Object tag) {
+        if (mRequestQueue != null) {
+            mRequestQueue.cancelAll(tag);
         }
-    };
-    queue.add(jsonObjReq);
+    }
 }
+
+
+
 
