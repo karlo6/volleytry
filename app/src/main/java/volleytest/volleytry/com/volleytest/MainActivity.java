@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
@@ -35,24 +36,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnAdd = (Button) findViewById(R.id.btnAdd);
-
         pDiggy = new ProgressDialog(this);
-        pDiggy.setMessage("Loading...");
-        pDiggy.show();
 
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        postRequest();
+                pDiggy.setMessage("Loading...");
+                pDiggy.show();
+
+                try {
+                    postRequest();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
     }
 
 
-    private void postRequest() {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", " asf");
-        params.put("quantity", "sf");
-        params.put("price", "asfgh");
+    private void postRequest() throws JSONException {
+        JSONObject jsonobject = new JSONObject();
+        jsonobject.put("name", " asf");
+        jsonobject.put("quantity", "sf");
+        jsonobject.put("price", "asfgh");
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, jsonobject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
